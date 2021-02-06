@@ -4,8 +4,22 @@
 - [CMake 指令详解](#CMake 指令详解)
 - [1.语法示例](#1)
 ## CMake 指令详解
-- CMAKE_MINIMUN_REQUIRED(VERSION 2.6)  
-cmake最小版本控制要求
+- **CMAKE_MINIMUN_REQUIRED(VERSION 2.6)**  
+cmake最小版本控制要求。  
+  
+- **PROJECT(TestDemo)**  
+设置此项目的名称，并且会赋值给系统变量${PROJECT_NAME},后面直接用PROJECT_NAME就可以。  
+  
+- **OPTION(TEST_DEBUG "option for debug" OFF)**  
+设置选项开关，在执行cmake命令(cmake .. TEST_DEBUG=ON)这个函数有三个参数：  
+                              第一个参数：设置选项名称，例如TEST_DEBUG,  
+                              第二个参数：解释该开关作用，只做解释，类似注释，  
+                              第三个参数：开关的默认值，这里OFF或者ON都是布尔型。  
+                              
+- **set(CMAKE_BUILD_TYPE Debug)**  
+指定编译类型，debug或者relaase，这两则区别就不过多介绍。  
+  
+- ****
 
 ## CMakeLists带注释的demo
 
@@ -22,11 +36,10 @@ if(TEST_DEBUG)
   xxx
 endif()
 
-#生成可执行文件target ，后面填写的是生成此可执行文件所依赖的源文件列表。
-add_executable(target target_source_codes) 
-
-# 设置一个名字var_name 的变量，同时给此变量赋值为var_value
-SET(var_name var_value)
+#指定编译类型，debug 或者为 release
+# debug 会生成相关调试信息，可以使用 GDB 进行
+# release 不会生成调试信息。当无法进行调试时查看此处是否设置为 debug.
+set(CMAKE_BUILD_TYPE Debug)
 
 # 指定编译器
 # CMAKE_C_FLAGS_DEBUG          ----  C 编译器
@@ -36,16 +49,14 @@ SET(var_name var_value)
 # -Wall：生成所有警告信息。一下是具体的选项，可以单独使用
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11   -g  -wall  ")
 
-#指定编译类型，debug 或者为 release
-# debug 会生成相关调试信息，可以使用 GDB 进行
-# release 不会生成调试信息。当无法进行调试时查看此处是否设置为 debug.
-set(CMAKE_BUILD_TYPE Debug)
+#生成可执行文件target ，后面填写的是生成此可执行文件所依赖的源文件列表。
+add_executable(target target_source_codes) 
+
+# 设置一个名字var_name 的变量，同时给此变量赋值为var_value
+SET(var_name var_value)
 
 # 打印消息
 MESSAGE("MSG") 
-
-#给变量var_name赋值为var_value，comment是此变量的注释，和SET 有类似的功效，用于给某变量设置默认值
-option(var_name "comment" var_value) 
 
 # 添加include路径，也就是头文件路径
 include_directories(xxx) 
