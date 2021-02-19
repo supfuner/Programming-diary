@@ -1,4 +1,5 @@
 👍推荐 在线阅读 (Github 访问速度比较慢可能会导致部分图片无法刷新出来)  
+☘️[emoj](https://emojipedia.org/)
 [参考cmake官网教程](https://cmake.org/cmake/help/latest/guide/tutorial/index.html#)
 ## 目录
 - [CMakeLists带注释的demo](#CMakeLists带注释的demo)
@@ -57,17 +58,29 @@
       
 - **Part 2 生成文件**  
 常用的生成文件有两种：一种是可执行文件，一种是库（动/静态库）
-  - **生成可执行文件**  
+  - **add_executable:生成可执行文件**  
   调用函数*add_executable(${PROJECT_NAME} $TD_src)*,该函数有两个入参：第一个参数直接使用系统变量PROJECT_NAME,这个变量在PRPOJEC的时候就直接被赋值了；第二个参数是编译可执行程序所依赖的源文件，在*file(GLOB ...)*中定义的。  
     
-  - **生成库文件**  
+  - **add_library:生成库文件**  
   不管是动态库还是静态库，统一用*add_library(<name> <SHARED|STATIC> <源代码>)函数生成，用法add_executable()差不多，只是第二个参数用来区别动态库还是静态库。  
     
-  - **添加链接库**  
+  - **target_link_libraries:添加链接库**  
   最后还需要链接一下所依赖的库，使用函数target_link_libraries(<name> <lib>),第一个参数同样是工程名字，可以用${PROJECT_NAME},第二个参数是库名字。例如target_link_libraries(${PROJECT_NAME} memleak),注意这里链接的是libmemleak.so的库，但是在函数里面只需要写上memleak就行。
   
 - **Part 3 安装文件**  
-  当文件生成后，需要安装到我们指定目录，不管是安装可执行文件，库文件还是头文件等，都可以通过install来完成。  
+  当文件生成后，需要安装到我们指定目录，不管是安装可执行文件，库文件还是头文件等，都可以通过install来完成。常见有安装可执行文件，安装库，安装文件。  
+  ```CMakelists.txt
+  install(
+    TARGET ${PROJECT_NAME} 
+        LIBRARY DESTINATION lib #动态库
+        ARCHIVE DESTINATION lib #静态库
+        RUNTIME DESTINATION bin #可执行文件
+  )
+  
+  install(
+    FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/Test.h DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/../output/include/ #安装文件
+  )  
+  ```
   
 ## CMakeLists带注释的demo
 
@@ -125,31 +138,4 @@ add_library(lib_name SHARED or STATIC lib_source_code)
 target_link_libraries(target_name lib_name ...)
 ```
 
-file dmeo ```
-message(STATUS "current dir: ${CMAKE_CURRENT_SOURCE_DIR}")  
-file(WRITE test1.txt "Some messages to Write\n" )  
-file(APPEND test1.txt "Another message to write\n")  
-file(READ test1.txt CONTENTS LIMIT 4 OFFSET 12)  
-message(STATUS "contents of test1.txt is: \n ${CONTENTS}")  
-file(MD5 ${CMAKE_CURRENT_SOURCE_DIR}/test1.txt HASH_CONTENTS)  
-message(STATUS "hash contents of test1.txt is: \n ${HASH_CONTENTS}")  
-file(STRINGS test1.txt PARSED_STRINGS)  
-message(STATUS "\n strings of test1.txt is: \n ${PARSED_STRINGS}")  
-file(GLOB files RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "*.*")  
-message(STATUS  "files: ${files}")  
-file(MAKE_DIRECTORY dir1 dir2)  
-file(RENAME dir2 dir3)  
-file(REMOVE dir3)  
-file(REMOVE_RECURSE dir3)  
-file(RELATIVE_PATH relative_path ${PROJECT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/test1.txt)  
-message(STATUS "relative path : ${relative_path}")  
-file(TO_CMAKE_PATH "$ENV{PATH}" cmake_path)  
-message(STATUS "cmake path: ${cmake_path}")  
-file(TO_NATIVE_PATH "/usr/local/sbin;/usr/local/bin" native_path)  
-message(STATUS "native path: ${native_path}")  
-file(DOWNLOAD "http://www.baidu.com" ${CMAKE_CURRENT_SOURCE_DIR}/index.html SHOW_PROGRESS)  
-file(COPY test1.txt DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/dir1)  
-file(INSTALL test1.txt DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/dir1)
-```
-<h2 id="1">1.语法示例</h2>
 
